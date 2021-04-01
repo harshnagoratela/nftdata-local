@@ -18,7 +18,9 @@ const ShowRecent = (props) => {
             const seaport = new OpenSeaPort(walletInstance.wallet.provider, {
                 networkName: Network.Main
             })
+            console.log("*** before fetchdata", walletInstance.wallet);
             seaport.api.getAssets().then((response) => {
+                console.log("***** after getorders", response)
                 setLoaded(true)
                 setAssets(response.assets)
             });
@@ -29,7 +31,7 @@ const ShowRecent = (props) => {
         <div>
             <Heading>Showing Recent Items</Heading>
             {!loaded && <span>Loading...<Loader /></span>}
-            <Flex style={{ flexWrap: "wrap" }}>
+            <Flex style={{flexWrap: "wrap"}}>
                 {assets && assets.map((asset, i) => {
                     return <ShowAsset key={i} asset={asset} />
                 })}
