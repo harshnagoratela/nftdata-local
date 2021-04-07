@@ -1,6 +1,7 @@
 import React from 'react';
 import { Heading, Button, Text, Box, Flex, Card, Link, Loader, Image } from 'rimble-ui';
-
+import { ModalManager } from 'react-dynamic-modal'
+import AssetItemModal from './AssetItemModal'
 
 const RecentListings = (props) => {
     const [loaded, setLoaded] = React.useState(false);
@@ -28,6 +29,10 @@ const RecentListings = (props) => {
     const loadMore = () => {
         setLoaded(false)
         setCurrentLimit(currentLimit + limitSteps)
+    }
+
+    const openModal = (item) => {
+        ModalManager.open(<AssetItemModal item={item} onRequestClose={() => true} />)
     }
 
     React.useEffect(() => {
@@ -63,7 +68,8 @@ const RecentListings = (props) => {
                                 {sellername &&
                                     <Text>Sold by: {sellername}</Text>
                                 }
-                            </Box>
+                                <Button.Outline size="small" onClick={() => openModal(item)}>Make Offer</Button.Outline>
+                            </Box>                            
                         </Flex>
                     </Card>
                 )
