@@ -1,7 +1,7 @@
 // Frameworks
 import React from 'react';
-import { navigate } from 'gatsby';
-import { Heading, Button, Text, Box, Flex, Card, Modal, Link, Loader, Image, Table } from 'rimble-ui';
+import { useStaticQuery, graphql, navigate } from 'gatsby';
+import { Heading, Button, Blockie, EthAddress, Text, Box, Flex, Card, Modal, Link, Loader, Image, Table } from 'rimble-ui';
 import styled from 'styled-components';
 import _ from 'lodash'
 
@@ -21,7 +21,7 @@ const TableCell = styled.td`
   padding: 1rem !important;
 `
 
-const IndexPage = () => {
+const IndexPage = ({ data }) => {
 
     const rootStore = React.useContext(RootStoreContext);
     const isLoggedIn = rootStore.walletStore.hasAccount;
@@ -38,10 +38,14 @@ const IndexPage = () => {
         setIsOpen(true);
     };
 
+    // Prepare Wallet Interface
     const wallet = Wallet.instance();
+    wallet.prepare({ store: rootStore.walletStore, site: data.site.siteMetadata })
+        .catch(err => { console.log(err); });
+
     const _walletConnect = (walletType) => async () => {
         try {
-            // console.log("***** login clicked")            
+            console.log("***** login clicked")
             await wallet.init(walletType);
             await wallet.connect();
             setIsOpen(false);
@@ -68,36 +72,56 @@ const IndexPage = () => {
     return (
         <Layout>
             <SEO title="Home" keywords={[`gatsby`, `application`, `react`]} />
-            <Box mt={4}>
-                <Text.p style={{ float: "right" }}>
-                    {!isLoggedIn &&
-                        <Button size="small" onClick={openModal}>Login</Button>
-                    }
-                    {isLoggedIn &&
-                        <Button size="small" onClick={_logout}>Logout</Button>
-                    }
-                </Text.p>
-            </Box>
-            <Heading as={"h2"}>
-                Manage My Assets
-            </Heading>
-            <Flex flexWrap='wrap'>
-                <Card>
-                    <Link href="#" target="_blank"><Heading as={'h4'}>Title</Heading></Link>
-                    <Image src="https://via.placeholder.com/150" borderRadius={8} />
-                    <Text>Description</Text>
-                </Card>
-                <Card>
-                    <Link href="#" target="_blank"><Heading as={'h4'}>Title</Heading></Link>
-                    <Image src="https://via.placeholder.com/150" borderRadius={8} />
-                    <Text>Description</Text>
-                </Card>
-                <Card>
-                    <Link href="#" target="_blank"><Heading as={'h4'}>Title</Heading></Link>
-                    <Image src="https://via.placeholder.com/150" borderRadius={8} />
-                    <Text>Description</Text>
-                </Card>
+            <Flex mt={4} flexDirection="row">
+
+                {!isLoggedIn &&
+                    <Box width={1}><Button size="small" style={{ float: "right" }} onClick={openModal}>Login</Button></Box>
+                }
+                {isLoggedIn &&
+                    <>
+                        <Box width={1 / 12}>
+                            <Blockie
+                                opts={{
+                                    seed: rootStore.walletStore.defaultAddress,
+                                    color: `#${rootStore.walletStore.defaultAddress.slice(2, 8)}`,
+                                    bgcolor: `#${rootStore.walletStore.defaultAddress.slice(-6)}`,
+                                    size: 15,
+                                    scale: 3,
+                                    spotcolor: '#000'
+                                }}
+                            />
+                        </Box>
+                        <Box width={1}><EthAddress address={rootStore.walletStore.defaultAddress} /></Box>
+                        <Box width={1 / 12} ml={3}><Button size="small" onClick={_logout}>Logout</Button></Box>
+                    </>
+                }
             </Flex>
+
+            {!isLoggedIn &&
+                <Heading as={"h2"}>Login to manage Assets</Heading>
+            }
+            {isLoggedIn &&
+                <Box>
+                    <Heading as={"h2"}>Manage My Assets</Heading>
+                    <Flex flexWrap='wrap'>
+                        <Card>
+                            <Link href="#" target="_blank"><Heading as={'h4'}>Title</Heading></Link>
+                            <Image src="https://via.placeholder.com/150" borderRadius={8} />
+                            <Text>Description</Text>
+                        </Card>
+                        <Card>
+                            <Link href="#" target="_blank"><Heading as={'h4'}>Title</Heading></Link>
+                            <Image src="https://via.placeholder.com/150" borderRadius={8} />
+                            <Text>Description</Text>
+                        </Card>
+                        <Card>
+                            <Link href="#" target="_blank"><Heading as={'h4'}>Title</Heading></Link>
+                            <Image src="https://via.placeholder.com/150" borderRadius={8} />
+                            <Text>Description</Text>
+                        </Card>
+                    </Flex>
+                </Box>
+            }
             <Flex mt={3}>
                 <RecentSales />
                 <RecentListings />
@@ -172,8 +196,19 @@ const IndexPage = () => {
                     ))}
                 </tbody>
             </Table> */}
-        </Layout>
+        </Layout >
     );
 };
 
 export default IndexPage;
+
+export const pageQuery = graphql`
+  query IndexPageSiteDataQuery {
+    site {
+        siteMetadata {
+            title
+            logoUrl
+        }
+    }
+  }
+`;

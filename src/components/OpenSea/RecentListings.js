@@ -66,7 +66,7 @@ const RecentListings = (props) => {
                                 }
                                 <Text>Price: {price} ETH</Text>
                                 {sellername &&
-                                    <Text>Sold by: {sellername}</Text>
+                                    <Text>Listed by: {sellername}</Text>
                                 }
                                 <Button.Outline size="small" onClick={() => openModal(item)}>Make Offer</Button.Outline>
                             </Box>                            
