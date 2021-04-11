@@ -45,7 +45,6 @@ const IndexPage = ({ data }) => {
 
     const _walletConnect = (walletType) => async () => {
         try {
-            console.log("***** login clicked")
             await wallet.init(walletType);
             await wallet.connect();
             setIsOpen(false);

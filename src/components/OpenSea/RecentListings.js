@@ -31,7 +31,7 @@ const RecentListings = (props) => {
         setCurrentLimit(currentLimit + limitSteps)
     }
 
-    const openModal = (item) => {
+    const openModal = (item) => {        
         ModalManager.open(<AssetItemModal item={item} onRequestClose={() => true} />)
     }
 
