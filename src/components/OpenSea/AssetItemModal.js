@@ -7,7 +7,7 @@ import { RootStoreContext } from '../../app/stores/root.store';
 import { OpenSeaPort, Network } from 'opensea-js'
 
 const AssetItemModal = (props) => {
-    const { item, onRequestClose } = props;
+    const { item, onRequestClose, sell } = props;
 
     const rootStore = React.useContext(RootStoreContext);
     const isLoggedIn = rootStore.walletStore.hasAccount;
@@ -72,6 +72,30 @@ const AssetItemModal = (props) => {
             ModalManager.close();
         }
     }
+    const makeSellOrder = async () => {
+        if (!isLoggedIn) {
+            console.log("******** NOT LOGGED IN")
+            return;
+        }
+        setProcessing(true);
+        const walletInstance = Wallet.instance();
+        if (walletInstance && walletInstance.wallet) {
+            const seaport = new OpenSeaPort(walletInstance.wallet.provider, {
+                networkName: Network.Main
+            })
+            const offer = await seaport.createSellOrder({
+                asset: {
+                    tokenId: item.asset.token_id,
+                    tokenAddress: item.asset.asset_contract.address,
+                },
+                accountAddress: rootStore.walletStore.defaultAddress,
+                startAmount: price,
+            })
+            setProcessing(false)
+            console.log("***** sell order created", offer)
+            ModalManager.close();
+        }
+    }
     return (
         <Modal onRequestClose={onRequestClose} effect={Effect.ScaleUp}>
             <Card p={0}>
@@ -107,15 +131,28 @@ const AssetItemModal = (props) => {
                                 {ownername &&
                                     <Text><strong>Listed by: </strong>{ownername}</Text>
                                 }
-                                <Button
-                                    variant="success"
-                                    icon="ShoppingCart"
-                                    size="small"
-                                    mt={5}
-                                    onClick={makeBuyOrder}
-                                    disabled={!isLoggedIn}>
-                                    Buy Now                                    
+                                {!sell &&
+                                    <Button
+                                        variant="success"
+                                        icon="ShoppingCart"
+                                        size="small"
+                                        mt={5}
+                                        onClick={makeBuyOrder}
+                                        disabled={!isLoggedIn}>
+                                        Buy Now
                                 </Button>
+                                }
+                                {sell &&
+                                    <Button
+                                        variant="success"
+                                        icon="ShoppingCart"
+                                        size="small"
+                                        mt={5}
+                                        onClick={makeSellOrder}
+                                        disabled={!isLoggedIn}>
+                                        Sell Now
+                                </Button>
+                                }
                                 {processing && <Loader m={2} style={{ display: "inline-flex" }} />}
                                 {!isLoggedIn &&
                                     <ToastMessage
