@@ -1,5 +1,5 @@
 import React from 'react';
-import { Heading, Button, Text, Box, Flex, Card, Link, Loader, Image, ToastMessage } from 'rimble-ui';
+import { Heading, Button, Text, Box, Flex, Flash, Card, Link, Loader, Image, Input, ToastMessage } from 'rimble-ui';
 import { Modal, ModalManager, Effect } from 'react-dynamic-modal'
 
 import Wallet from '../../app/wallets';
@@ -14,8 +14,9 @@ const AssetItemModal = (props) => {
 
     const [loaded, setLoaded] = React.useState(false);
     const [processing, setProcessing] = React.useState(false);
+    const [error, setError] = React.useState();
     const [data, setData] = React.useState();
-    // console.log("**** item", item, data)
+    const [userPrice, setUserPrice] = React.useState();
 
     const fetchData = (assetContract, tokenId) => {
         const fetch = require('node-fetch');
@@ -25,7 +26,7 @@ const AssetItemModal = (props) => {
         fetch(url, options)
             .then(res => res.json())
             .then(json => {
-                // console.log("Asset Details", json)
+                console.log("Asset Details", json)
                 setLoaded(true)
                 setData(json)
             })
@@ -34,6 +35,7 @@ const AssetItemModal = (props) => {
 
     React.useEffect(() => {
         if (item.asset) {
+            console.log("**** ", item.asset.asset_contract.address, item.asset.token_id)
             fetchData(item.asset.asset_contract.address, item.asset.token_id);
         }
     }, []);
@@ -58,18 +60,23 @@ const AssetItemModal = (props) => {
             const seaport = new OpenSeaPort(walletInstance.wallet.provider, {
                 networkName: Network.Main
             })
-            console.log("*** before fetchdata", rootStore.walletStore.defaultAddress);
             const offer = await seaport.createBuyOrder({
                 asset: {
                     tokenId: item.asset.token_id,
                     tokenAddress: item.asset.asset_contract.address,
                 },
                 accountAddress: rootStore.walletStore.defaultAddress,
-                startAmount: price,
-            })
-            setProcessing(false)
-            console.log("***** offer created", offer)
-            ModalManager.close();
+                startAmount: userPrice,
+            }).catch(err => {
+                console.error("******** ERROR while creating BUY Order" + err);
+                setError(err + "")
+                setProcessing(false)
+            });
+            if (offer) {
+                setProcessing(false)
+                console.log("***** offer created", offer)
+                ModalManager.close();
+            }
         }
     }
     const makeSellOrder = async () => {
@@ -89,11 +96,17 @@ const AssetItemModal = (props) => {
                     tokenAddress: item.asset.asset_contract.address,
                 },
                 accountAddress: rootStore.walletStore.defaultAddress,
-                startAmount: price,
-            })
-            setProcessing(false)
-            console.log("***** sell order created", offer)
-            ModalManager.close();
+                startAmount: userPrice,
+            }).catch(err => {
+                console.error("******** ERROR while creating SELL Order" + err);
+                setError(err + "")
+                setProcessing(false)
+            });
+            if (offer) {
+                setProcessing(false)
+                console.log("***** offer created", offer)
+                ModalManager.close();
+            }
         }
     }
     return (
@@ -131,28 +144,35 @@ const AssetItemModal = (props) => {
                                 {ownername &&
                                     <Text><strong>Listed by: </strong>{ownername}</Text>
                                 }
-                                {!sell &&
-                                    <Button
-                                        variant="success"
-                                        icon="ShoppingCart"
-                                        size="small"
-                                        mt={5}
-                                        onClick={makeBuyOrder}
-                                        disabled={!isLoggedIn}>
-                                        Buy Now
-                                </Button>
-                                }
-                                {sell &&
-                                    <Button
-                                        variant="success"
-                                        icon="ShoppingCart"
-                                        size="small"
-                                        mt={5}
-                                        onClick={makeSellOrder}
-                                        disabled={!isLoggedIn}>
-                                        Sell Now
-                                </Button>
-                                }
+                                <Flex mt={3}>
+                                    <Input
+                                        type="number"
+                                        value={userPrice}
+                                        required={true}
+                                        placeholder="Amount in ETH"
+                                        onChange={(e) => setUserPrice(e.target.value)}
+                                    />
+                                    {!sell &&
+                                        <Button
+                                            variant="success"
+                                            icon="ShoppingCart"
+                                            ml={3}
+                                            onClick={makeBuyOrder}
+                                            disabled={!isLoggedIn}>
+                                            Buy Now
+                                        </Button>
+                                    }
+                                    {sell &&
+                                        <Button
+                                            variant="success"
+                                            icon="ShoppingCart"
+                                            ml={3}
+                                            onClick={makeSellOrder}
+                                            disabled={!isLoggedIn}>
+                                            Sell Now
+                                        </Button>
+                                    }
+                                </Flex>
                                 {processing && <Loader m={2} style={{ display: "inline-flex" }} />}
                                 {!isLoggedIn &&
                                     <ToastMessage
@@ -160,6 +180,9 @@ const AssetItemModal = (props) => {
                                         secondaryMessage={"Please login to Buy this Item"}
                                         variant={'failure'}
                                     />
+                                }
+                                {error &&
+                                    <Flash my={3} variant="danger">{error}</Flash>
                                 }
                             </Box>
                         </Flex>

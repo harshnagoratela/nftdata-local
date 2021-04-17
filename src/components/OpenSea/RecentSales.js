@@ -1,7 +1,6 @@
 import React from 'react';
 import { Heading, Button, Text, Box, Flex, Card, Link, Loader, Image } from 'rimble-ui';
-import { ModalManager } from 'react-dynamic-modal'
-import AssetItemModal from './AssetItemModal'
+import SingleAsset from './SingleAsset';
 
 const RecentSales = (props) => {
     const [loaded, setLoaded] = React.useState(false);
@@ -31,10 +30,6 @@ const RecentSales = (props) => {
         setCurrentLimit(currentLimit + limitSteps)
     }
 
-    const openModal = (item) => {
-        ModalManager.open(<AssetItemModal item={item} onRequestClose={() => true} />)
-    }
-
     React.useEffect(() => {
         fetchData('0x694e64d4ad77e0c234b7b1c55ac40302ad86ce3f');
     }, [currentLimit]);
@@ -46,32 +41,8 @@ const RecentSales = (props) => {
                 {!loaded && <Loader mx={2} style={{ display: "inline-flex" }} />}
             </Heading>
             {data && data.map((item, index) => {
-                const imageURL = item.asset && (item.asset.image_thumbnail_url || item.asset.image_preview_url || item.asset.image_url)
-                const name = item.asset && (item.asset.name || 'No Title')
-                const assetLink = item.asset && (item.asset.permalink || '#')
-                const collectionName = item.asset && item.asset.collection && item.asset.collection.name
-                const collectionLink = item.asset && item.asset.collection && item.asset.collection.slug
-                const price = (item.total_price || 0) / 1000000000000000000;
-                const sellername = item.seller && item.seller.user && item.seller.user.username
                 return (
-                    <Card px={3} key={index}>
-                        <Flex>
-                            <Box>
-                                <Image src={imageURL} alt={name} width={80} borderRadius={8} />
-                            </Box>
-                            <Box px={3}>
-                                <Link href={assetLink} target="_blank"><Heading as={'h4'}>{name}</Heading></Link>
-                                {collectionName &&
-                                    <Link href={`http://opensea.io/collection/${collectionLink}`} target="_blank"><Text>{collectionName}</Text></Link>
-                                }
-                                <Text>Price: {price} ETH</Text>
-                                {sellername &&
-                                    <Text>Sold by: {sellername}</Text>
-                                }
-                                <Button.Outline size="small" onClick={() => openModal(item)}>Get Details</Button.Outline>
-                            </Box>
-                        </Flex>
-                    </Card>
+                    <SingleAsset key={index} item={item} buttonText={'Get Details'} />
                 )
             })}
 
