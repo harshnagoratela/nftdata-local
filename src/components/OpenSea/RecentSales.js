@@ -6,7 +6,7 @@ const RecentSales = (props) => {
     const [loaded, setLoaded] = React.useState(false);
     const [data, setData] = React.useState([]);
     const limitSteps = 20
-    const [currentLimit, setCurrentLimit] = React.useState(limitSteps);
+    const [currentLimit, setCurrentLimit] = React.useState(limitSteps);    
 
     const fetchData = (account) => {
         const fetch = require('node-fetch');
@@ -31,8 +31,12 @@ const RecentSales = (props) => {
     }
 
     React.useEffect(() => {
-        fetchData('0x694e64d4ad77e0c234b7b1c55ac40302ad86ce3f');
-    }, [currentLimit]);
+        //Filter based on login collection or all collection
+        const currentAccountAddress = props.filterCollection !=='All' ? props.accountAddress : '0x694e64d4ad77e0c234b7b1c55ac40302ad86ce3f';
+        setLoaded(false)
+        setData([])
+        fetchData(currentAccountAddress);
+    }, [currentLimit, props.filterCollection]);
 
     return (
         <Box width={1} my={1} p={2} border='1px solid'>

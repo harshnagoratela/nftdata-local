@@ -62,9 +62,9 @@ const MyAssetsCarousel = (props) => {
                     transitionDuration={500}
                     removeArrowOnDeviceType={["tablet", "mobile"]}
                 >
-                    {data && data.map((item) => {
+                    {data && data.map((item, index) => {
                         return (
-                            <SingleAsset item={item} buttonText={'Sell Item'} isSell={true} />
+                            <SingleAsset key={index} item={item} buttonText={'Sell Item'} isSell={true} />
                         );
                     })}
                 </Carousel>

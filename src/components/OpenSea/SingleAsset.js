@@ -23,7 +23,7 @@ const SingleAsset = (props) => {
             <Image src={imageURL} alt={name} width={1} borderRadius={8} />
             <Link href={assetLink} target="_blank"><Heading as={'h4'}>{name}</Heading></Link>
             {collectionName &&
-                <Link href={`http://opensea.io/collection/${collectionLink}`} target="_blank"><Text>{collectionName}</Text></Link>
+                <Link href={`/collection/${collectionLink}`} target="_blank"><Text>{collectionName}</Text></Link>
             }
             <Text>Price: {price} ETH</Text>
             <Button.Outline size="small" onClick={() => openModal(item)}>{buttonText}</Button.Outline>
