@@ -87,7 +87,7 @@ const MyAssetsSection = ({ site }) => {
             }
             {isLoggedIn &&
                 <Box>
-                    <Heading as={"h2"}>Manage My Assets</Heading>
+                    <Heading as={"h2"}>Manage Assets</Heading>
                     <MyAssetsCarousel accountaddress={rootStore.walletStore.defaultAddress}/>                    
                 </Box>
             }
