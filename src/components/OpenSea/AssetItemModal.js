@@ -1,10 +1,13 @@
 import React from 'react';
-import { Heading, Button, Text, Box, Flex, Flash, Card, Link, Loader, Image, Input, ToastMessage } from 'rimble-ui';
+import { Heading, Button, Text, Box, Flex, Flash, Card, Link, Loader, Pill, Image, Input, ToastMessage } from 'rimble-ui';
 import { Modal, ModalManager, Effect } from 'react-dynamic-modal'
 
 import Wallet from '../../app/wallets';
 import { RootStoreContext } from '../../app/stores/root.store';
 import { OpenSeaPort, Network } from 'opensea-js'
+
+import { ContentfulReadTags, ContentfulWriteTags } from './ContentfulActions';
+import _ from 'lodash';
 
 const AssetItemModal = (props) => {
     const { item, onRequestClose, sell } = props;
@@ -14,9 +17,13 @@ const AssetItemModal = (props) => {
 
     const [loaded, setLoaded] = React.useState(false);
     const [processing, setProcessing] = React.useState(false);
+    const [saveProcessing, setSaveProcessing] = React.useState(false);
     const [error, setError] = React.useState();
     const [data, setData] = React.useState();
-    const [userPrice, setUserPrice] = React.useState();
+    const [userPrice, setUserPrice] = React.useState("");
+    const [existingTags, setExistingTags] = React.useState([]);
+    const [tagName, setTagName] = React.useState("");
+    const [saveMessage, setSaveMessage] = React.useState("");
 
     const fetchData = (assetContract, tokenId) => {
         const fetch = require('node-fetch');
@@ -29,14 +36,14 @@ const AssetItemModal = (props) => {
                 console.log("Asset Details", json)
                 setLoaded(true)
                 setData(json)
+                _.delay(getExistingTags, 2000, json.id);
             })
             .catch(err => console.error('error:' + err));
     }
 
     React.useEffect(() => {
         if (item.asset) {
-            console.log("**** ", item.asset.asset_contract.address, item.asset.token_id)
-            fetchData(item.asset.asset_contract.address, item.asset.token_id);
+            fetchData(item.asset.asset_contract.address, item.asset.token_id);               
         }
     }, []);
 
@@ -109,6 +116,24 @@ const AssetItemModal = (props) => {
             }
         }
     }
+
+    const getExistingTags = (id) => {
+        ContentfulReadTags(rootStore.walletStore.defaultAddress, id).then((response) => {
+            console.log("*********** Tag Received .....", response)            
+            setExistingTags(response)
+        })
+    }
+    const saveTag = () => {
+        setSaveProcessing(true);
+        ContentfulWriteTags(rootStore.walletStore.defaultAddress, data.id, tagName).then(() => {
+            console.log("*********** Tag Saved.....")            
+            setSaveProcessing(false);
+            setSaveMessage("Tag Saved Successfully....");
+            setTagName("");
+            _.delay(setSaveMessage, 2000, ""); //remove save message after 2 sec delay
+        })
+    }
+
     return (
         <Modal onRequestClose={onRequestClose} effect={Effect.ScaleUp}>
             <Card p={0}>
@@ -171,6 +196,27 @@ const AssetItemModal = (props) => {
                                             disabled={!isLoggedIn}>
                                             Sell Now
                                         </Button>
+                                    }
+                                    {isLoggedIn &&
+                                        <Box>
+                                            <Flex ml={3}>
+                                                <Input
+                                                    type="text"
+                                                    value={tagName}
+                                                    placeholder="Tag to add"
+                                                    onChange={(e) => setTagName(e.target.value)}
+                                                />
+                                                <Button onClick={saveTag}>Tags {saveProcessing && <Loader ml={2} bg="primary" color="white" style={{ display: "inline-flex" }} />}</Button>
+                                            </Flex>
+                                            {saveMessage &&
+                                                <Flash m={3} variant="success">{saveMessage}</Flash>
+                                            }
+                                            <Flex m={3}>
+                                                {existingTags && existingTags.map((tag)=>
+                                                    <Pill mr={2}>{tag}</Pill>
+                                                )}
+                                            </Flex>
+                                        </Box>
                                     }
                                 </Flex>
                                 {processing && <Loader m={2} style={{ display: "inline-flex" }} />}
