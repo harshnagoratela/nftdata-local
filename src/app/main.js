@@ -6,9 +6,6 @@ import { Heading, Blockie, EthAddress, Button, Text, Box } from 'rimble-ui';
 // Wallet Interface
 import Wallet from './wallets';
 
-//Components
-import ShowRecent from './components/OpenSea/ShowRecent';
-
 // Data Store
 import { RootStoreContext } from './stores/root.store';
 
@@ -43,10 +40,6 @@ function Main() {
                 <Text>
                     <EthAddress address={walletStore.defaultAddress} />
                 </Text>
-            </Box>
-
-            <Box mt={20}>
-                <ShowRecent />
             </Box>
 
             <Box mt={40}>
