@@ -1,3 +1,4 @@
+import { sampleSize } from 'lodash';
 import React from 'react'
 import { Heading, Button, Text, Box, Link, Loader, Image, Table } from 'rimble-ui';
 import styled from 'styled-components';
@@ -24,9 +25,8 @@ const IndividualCollection = (props) => {
     React.useEffect(() => {
         //get assets
         const fetch = require('node-fetch');
-        const url = 'https://api.opensea.io/api/v1/assets';
-        const options = { method: 'GET', qs: { offset: '0', limit: '20', collection: slug } };
-        fetch(url, options)
+        const url = 'https://api.opensea.io/api/v1/assets?offset=0&limit=50&order_direction=desc&collection='+slug;
+        fetch(url)
             .then(res => res.json())
             .then(json => {
                 console.log(json)
@@ -35,6 +35,12 @@ const IndividualCollection = (props) => {
             })
             .catch(err => console.error('error:' + err));
     }, []);
+
+    const getLastSaleString = (sale) => {
+        if(!sale) return;
+        const price = sale.total_price / (10**sale.payment_token.decimals)
+        return price+" "+sale.payment_token.symbol
+    }
 
     return (
         <Layout>
@@ -53,7 +59,7 @@ const IndividualCollection = (props) => {
                         <TableCellHeading>SrNo</TableCellHeading>
                         <TableCellHeading>Name</TableCellHeading>
                         <TableCellHeading>Image</TableCellHeading>
-                        <TableCellHeading>Total Sale</TableCellHeading>
+                        <TableCellHeading>Last Sale</TableCellHeading>
                     </tr>
                 </thead>
                 <tbody>
@@ -63,7 +69,7 @@ const IndividualCollection = (props) => {
                             <TableCell>{index+1}</TableCell>
                             <TableCell><Link href={asset.permalink} target="_blank">{asset.name || "No Name"}</Link></TableCell>
                             <TableCell><Image src={asset.image_thumbnail_url || asset.image_url} alt={asset.name} borderRadius={8} width={80} /></TableCell>
-                            <TableCell>{asset.num_sales || 0}</TableCell>
+                            <TableCell>{(asset.last_sale && getLastSaleString(asset.last_sale)) || 0}</TableCell>
                         </tr>
                     ))}
                 </tbody>

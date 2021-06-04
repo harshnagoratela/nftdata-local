@@ -9,6 +9,7 @@ import SEO from '../components/seo';
 import RecentSales from '../components/OpenSea/RecentSales'
 import RecentListings from '../components/OpenSea/RecentListings'
 import MyAssetsSection from '../components/OpenSea/MyAssetsSection'
+import ListCollections from '../components/OpenSea/ListCollections'
 import { Field, Radio } from 'rimble-ui';
 
 import { RootStoreContext } from '../app/stores/root.store';
@@ -24,7 +25,8 @@ const IndexPage = ({ data }) => {
     return (
         <Layout>
             <SEO title="Home" keywords={[`gatsby`, `application`, `react`]} />
-            <MyAssetsSection site={data.site} />
+            <ListCollections />
+            {/* <MyAssetsSection site={data.site} />
                 <Field label="Filter collections" mt={3}>
                     <Radio
                         name="filterCollection"
@@ -47,7 +49,7 @@ const IndexPage = ({ data }) => {
             <Flex>
                 <RecentSales filterCollection={filterCollection} accountAddress={accountAddress} />
                 <RecentListings filterCollection={filterCollection} accountAddress={accountAddress} />
-            </Flex>
+            </Flex> */}
         </Layout>
     );
 };
