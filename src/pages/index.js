@@ -9,8 +9,10 @@ import SEO from '../components/seo';
 import RecentSales from '../components/OpenSea/RecentSales'
 import RecentListings from '../components/OpenSea/RecentListings'
 import MyAssetsSection from '../components/OpenSea/MyAssetsSection'
-import ListCollections from '../components/OpenSea/ListCollections'
 import { Field, Radio } from 'rimble-ui';
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
+import '../components/custom-tabs.css';
 
 import { RootStoreContext } from '../app/stores/root.store';
 
@@ -22,34 +24,59 @@ const IndexPage = ({ data }) => {
 
     const [filterCollection, setFilterCollection] = React.useState("All")
 
+    const initialCollections = [
+        'superrare',
+        'known-origin',
+        'async-art',
+        'cryptopunks',
+        'art-blocks',
+    ]
+
     return (
         <Layout>
             <SEO title="Home" keywords={[`gatsby`, `application`, `react`]} />
-            <ListCollections />
-            {/* <MyAssetsSection site={data.site} />
-                <Field label="Filter collections" mt={3}>
-                    <Radio
-                        name="filterCollection"
-                        value="All"
-                        label="All"
-                        my={2}
-                        defaultChecked
-                        checked={filterCollection === "All"}
-                        onChange={(e) => setFilterCollection(e.target.value)}
+            {/* <ListCollections /> */}
+            <MyAssetsSection site={data.site} />
+            <Field label="Filter collections" mt={3}>
+                <Radio
+                    name="filterCollection"
+                    value="All"
+                    label="All"
+                    my={2}
+                    defaultChecked
+                    checked={filterCollection === "All"}
+                    onChange={(e) => setFilterCollection(e.target.value)}
+                />
+                <Radio
+                    name="filterCollection"
+                    value="Wallet"
+                    label="Wallet"
+                    my={2}
+                    checked={filterCollection === "Wallet"}
+                    onChange={(e) => setFilterCollection(e.target.value)}
+                />
+            </Field>
+            <Tabs>
+                <TabList>
+                    <Tab bg="blue">Recent Sales</Tab>
+                    <Tab>Recent Listings</Tab>
+                </TabList>
+
+                <TabPanel>
+                    <RecentSales
+                        initialCollections={initialCollections}
+                        filterCollection={filterCollection}
+                        accountAddress={accountAddress}
                     />
-                    <Radio
-                        name="filterCollection"
-                        value="Wallet"
-                        label="Wallet"
-                        my={2}
-                        checked={filterCollection === "Wallet"}
-                        onChange={(e) => setFilterCollection(e.target.value)}
+                </TabPanel>
+                <TabPanel>
+                    <RecentListings
+                        initialCollections={initialCollections}
+                        filterCollection={filterCollection}
+                        accountAddress={accountAddress}
                     />
-                </Field>
-            <Flex>
-                <RecentSales filterCollection={filterCollection} accountAddress={accountAddress} />
-                <RecentListings filterCollection={filterCollection} accountAddress={accountAddress} />
-            </Flex> */}
+                </TabPanel>
+            </Tabs>
         </Layout>
     );
 };
