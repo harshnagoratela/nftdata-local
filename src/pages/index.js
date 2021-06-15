@@ -37,6 +37,7 @@ const IndexPage = ({ data }) => {
             <SEO title="Home" keywords={[`gatsby`, `application`, `react`]} />
             {/* <ListCollections /> */}
             <MyAssetsSection site={data.site} />
+            <h3>Crypto art sales, data, links and info </h3>
             <Field label="Filter collections" mt={3}>
                 <Radio
                     name="filterCollection"

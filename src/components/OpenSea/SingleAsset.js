@@ -25,7 +25,7 @@ const SingleAsset = (props) => {
 
     return (
         <Card key={'myassets-' + randomNumber} m={3}>
-            <Image src={imageURL} alt={name} width={1} borderRadius={8} />
+            <Image src={imageURL} alt={name} width={.5} maxWidth='128px' borderRadius={8} />
             <Heading as={'h4'}>{name}</Heading>
             {collectionName &&
                 <Link href={`/collection/${collectionLink}`}><Text>{collectionName}</Text></Link>

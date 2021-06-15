@@ -56,14 +56,17 @@ const IndividualCollection = (props) => {
     return (
         <Layout>
             <SEO title={`Collection | ${slug}`} />
+            {/**
             <Box mt={4}>
                 <Text.p style={{ float: "right" }}>
                     <Button size="small" as="a" href="/">&lt;&lt; Back to Home</Button>
                 </Text.p>
             </Box>
-            <Heading as={"h3"}>
+
+              <Heading as={"h3"}>
                 '{slug}' collection
             </Heading>
+            **/}
             {!loaded && <Loader mx={2} style={{ display: "inline-flex" }} />}
             {collectionData &&
                 <Card m={3}>
@@ -96,6 +99,8 @@ const IndividualCollection = (props) => {
                 <TabList>
                     <Tab bg="blue">Recent Sales</Tab>
                     <Tab>Recent Listings</Tab>
+                    <Tab>Data & Charts</Tab>
+                    <Tab>Info</Tab>
                 </TabList>
 
                 <TabPanel>
@@ -109,6 +114,12 @@ const IndividualCollection = (props) => {
                         initialCollections={[slug]}
                         filterCollection={'All'}
                     />
+                </TabPanel>
+                <TabPanel>
+                    embedded link(s)
+                </TabPanel>
+                <TabPanel>
+
                 </TabPanel>
             </Tabs>
         </Layout>
