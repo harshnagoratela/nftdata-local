@@ -1,8 +1,9 @@
 import {Link} from 'gatsby';
 import PropTypes from 'prop-types';
 import React from 'react';
+import MyAssetsSection from '../components/OpenSea/MyAssetsSection'
 
-const Header = ({siteTitle}) => (
+const Header = ({siteTitle, site}) => (
     <header
         style={{
             background: `rebeccapurple`,
@@ -27,6 +28,7 @@ const Header = ({siteTitle}) => (
                     {siteTitle}
                 </Link>
             </h1>
+            <MyAssetsSection site={site} />
         </div>
     </header>
 );

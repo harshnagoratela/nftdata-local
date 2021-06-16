@@ -1,5 +1,6 @@
-import _,{ sampleSize } from 'lodash';
+import _, { sampleSize } from 'lodash';
 import React from 'react'
+import { ReactDOM } from 'react';
 import { Heading, Button, Text, Box, Flex, Card, Link, Loader, Image } from 'rimble-ui';
 import styled from 'styled-components';
 
@@ -23,23 +24,29 @@ const TableCell = styled.td`
 
 const IndividualCollection = (props) => {
     const { slug } = props;
+    const { data } = props;
+
+    const currentDataEdges = data.allMarkdownRemark && data.allMarkdownRemark.edges && _.filter(data.allMarkdownRemark.edges, ({ node }) => (node.fileAbsolutePath && node.fileAbsolutePath.indexOf(slug) >= 0))
+    const currentMarkdownData = (currentDataEdges && currentDataEdges[0] && currentDataEdges[0].node) || {}
+    const collectionAddress = currentMarkdownData.frontmatter && currentMarkdownData.frontmatter.address;
 
     const [loaded, setLoaded] = React.useState(false);
     const [collectionData, setCollectionData] = React.useState();
+
+    let iframeHeight = '1200px';
     // superrare, known-origin, async-art, cryptopunks, art-blocks
-    const collectionMap = [
-        { slug:'superrare', address:'0x8c9f364bf7a56ed058fc63ef81c6cf09c833e656' }, // Superrare
-        { slug:'known-origin', address: '0xfbeef911dc5821886e1dda71586d90ed28174b7d' }, // Known Origin
-        { slug:'async-art', address: '0xb6dae651468e9593e4581705a09c10a76ac1e0c8' }, // async-art
-        { slug:'cryptopunks', address: '0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb' }, // Cryptopunks
-        { slug:'art-blocks', address: '0xa7d8d9ef8d8ce8992df33d8b8cf4aebabd5bd270' }, // art-blocks
-    ]
-    const collectionAddress = _.find(collectionMap, ["slug", slug]) || {};
+    // const collectionMap = [
+    //     { slug: 'superrare', address: '0x8c9f364bf7a56ed058fc63ef81c6cf09c833e656' }, // Superrare
+    //     { slug: 'known-origin', address: '0xfbeef911dc5821886e1dda71586d90ed28174b7d' }, // Known Origin
+    //     { slug: 'async-art', address: '0xb6dae651468e9593e4581705a09c10a76ac1e0c8' }, // async-art
+    //     { slug: 'cryptopunks', address: '0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb' }, // Cryptopunks
+    //     { slug: 'art-blocks', address: '0xa7d8d9ef8d8ce8992df33d8b8cf4aebabd5bd270' }, // art-blocks
+    // ]    
 
     React.useEffect(() => {
         //get assets
         const fetch = require('node-fetch');
-        const url = 'https://api.opensea.io/api/v1/collections?offset=0&limit=1&asset_owner=' + collectionAddress.address;
+        const url = 'https://api.opensea.io/api/v1/collections?offset=0&limit=1&asset_owner=' + collectionAddress;
         console.log("*** url", url)
         fetch(url)
             .then(res => res.json())
@@ -70,29 +77,35 @@ const IndividualCollection = (props) => {
             {!loaded && <Loader mx={2} style={{ display: "inline-flex" }} />}
             {collectionData &&
                 <Card m={3}>
-                    <Image src={imageURL} alt={collectionData.name} width={1 / 4} borderRadius={8} />
-                    <Link href={`/collection/${collectionData.slug}`} target="_blank">
-                        <Heading as={'h3'}>{collectionData.name}</Heading>
-                    </Link>
-                    <Text>{collectionData.description}</Text>
                     <Flex>
-                        <Card width={1 / 4} m={3}>
-                            <Heading as={'h4'} textAlign='center'>{collectionData.stats.market_cap.toFixed(2)}</Heading>
-                            <Text fontSize={0} textAlign='center'>Market Cap</Text>
-                        </Card>
-                        <Card width={1 / 4} m={3}>
-                            <Heading as={'h4'} textAlign='center'>{collectionData.stats.average_price.toFixed(2)}</Heading>
-                            <Text fontSize={0} textAlign='center'>Avg. Price</Text>
-                        </Card>
-                        <Card width={1 / 4} m={3}>
-                            <Heading as={'h4'} textAlign='center'>{collectionData.stats.total_sales.toFixed(2)}</Heading>
-                            <Text fontSize={0} textAlign='center'>Total Sales</Text>
-                        </Card>
-                        <Card width={1 / 4} m={3}>
-                            <Heading as={'h4'} textAlign='center'>{collectionData.stats.num_owners}</Heading>
-                            <Text fontSize={0} textAlign='center'>Owners</Text>
-                        </Card>
+                        <Image src={imageURL} alt={collectionData.name} width={1 / 4} borderRadius={8} />
+                        <Box mx={3}>
+                            <Link href={`/collection/${collectionData.slug}`} target="_blank">
+                                <Heading as={'h3'}>{collectionData.name}</Heading>
+                            </Link>
+                            <Text>{collectionData.description}</Text>
+                        </Box>
                     </Flex>
+                    {collectionData.stats &&
+                        <Flex>
+                            <Card width={1 / 4} m={3}>
+                                <Heading as={'h4'} textAlign='center'>{collectionData.stats.market_cap.toFixed(2)}</Heading>
+                                <Text fontSize={0} textAlign='center'>Market Cap</Text>
+                            </Card>
+                            <Card width={1 / 4} m={3}>
+                                <Heading as={'h4'} textAlign='center'>{collectionData.stats.average_price.toFixed(2)}</Heading>
+                                <Text fontSize={0} textAlign='center'>Avg. Price</Text>
+                            </Card>
+                            <Card width={1 / 4} m={3}>
+                                <Heading as={'h4'} textAlign='center'>{collectionData.stats.total_sales.toFixed(2)}</Heading>
+                                <Text fontSize={0} textAlign='center'>Total Sales</Text>
+                            </Card>
+                            <Card width={1 / 4} m={3}>
+                                <Heading as={'h4'} textAlign='center'>{collectionData.stats.num_owners}</Heading>
+                                <Text fontSize={0} textAlign='center'>Owners</Text>
+                            </Card>
+                        </Flex>
+                    }
                 </Card>
             }
             <Tabs>
@@ -116,10 +129,19 @@ const IndividualCollection = (props) => {
                     />
                 </TabPanel>
                 <TabPanel>
-                    embedded link(s)
+                    <Card>
+                        <iframe 
+                            src={currentMarkdownData.frontmatter && currentMarkdownData.frontmatter.data_dashboard}
+                            width="100%"
+                            height={iframeHeight}
+                            frameBorder="0"
+                        />
+                    </Card>
                 </TabPanel>
                 <TabPanel>
-
+                    <Card>
+                        <div dangerouslySetInnerHTML={{ __html: currentMarkdownData.html }} />
+                    </Card>
                 </TabPanel>
             </Tabs>
         </Layout>
@@ -127,3 +149,21 @@ const IndividualCollection = (props) => {
 }
 
 export default IndividualCollection;
+
+export const pageQuery = graphql`
+  query CollectionPageQuery {
+        allMarkdownRemark {
+          edges {
+            node {
+              frontmatter {
+                title
+                address
+                data_dashboard
+              }
+              html
+              fileAbsolutePath
+            }
+          }
+        }      
+  }
+`;

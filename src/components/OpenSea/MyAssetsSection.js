@@ -60,7 +60,7 @@ const MyAssetsSection = ({ site }) => {
             <Flex mt={4} flexDirection="row">
 
                 {!isLoggedIn &&
-                    <Box width={1}><Button size="small" style={{ float: "right" }} onClick={openModal}>Login</Button></Box>
+                    <Box width={1}><Button mainColor="DarkCyan" size="small" style={{ float: "right" }} onClick={openModal}>Login</Button></Box>
                 }
                 {isLoggedIn &&
                     <>
@@ -77,7 +77,7 @@ const MyAssetsSection = ({ site }) => {
                             />
                         </Box>
                         <Box width={1}><EthAddress address={rootStore.walletStore.defaultAddress} /></Box>
-                        <Box width={1 / 12} ml={3}><Button size="small" onClick={_logout}>Logout</Button></Box>
+                        <Box width={1 / 12} ml={3}><Button mainColor="DarkCyan" size="small" onClick={_logout}>Logout</Button></Box>
                     </>
                 }
             </Flex>

@@ -12,7 +12,7 @@ const RecentSales = (props) => {
     const fetchData = (accountAddress, collection) => {
         const fetch = require('node-fetch');
         const url = 'https://api.opensea.io/api/v1/events';
-        let qs = '?event_type=created&only_opensea=false&offset=0&limit=' + currentLimit
+        let qs = '?event_type=successful&only_opensea=false&offset=0&limit=' + currentLimit
         if (accountAddress) qs += "&account_address=" + accountAddress;
         if (collection) qs += "&collection_slug=" + collection;
         const options = { method: 'GET' };
@@ -37,7 +37,7 @@ const RecentSales = (props) => {
         setData([])
         if (props.filterCollection == 'All' && props.initialCollections) {
             props.initialCollections.map(item => {
-                fetchData(props.accountAddress, item);
+                if(!!item) fetchData(props.accountAddress, item);
             })
         } else {
             fetchData(props.accountAddress);
@@ -53,7 +53,7 @@ const RecentSales = (props) => {
             <Flex flexWrap='wrap'>
                 {data && data.map((item, index) => {
                     return (
-                        <Box width={1 / 2}>
+                        <Box width={1}>
                             <SingleAsset key={index} item={item} buttonText={'Get Details'} />
                         </Box>
                     )

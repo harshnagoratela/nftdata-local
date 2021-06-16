@@ -29,7 +29,7 @@ const Layout = ({children}) => {
     return (
         <>
             <ThemeProvider theme={Object.assign({}, theme, customTheme)}>
-                <Header siteTitle={data.site.siteMetadata.title} onClick={_goHome}/>
+                <Header siteTitle={data.site.siteMetadata.title} site={data.site} onClick={_goHome}/>
                 <div
                     style={{
                         margin: `0 auto`,

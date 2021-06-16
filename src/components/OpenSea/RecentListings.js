@@ -36,7 +36,7 @@ const RecentListings = (props) => {
         setData([])
         if (props.filterCollection == 'All' && props.initialCollections) {
             props.initialCollections.map(item => {
-                fetchData(props.accountAddress, item);
+                if(!!item) fetchData(props.accountAddress, item);
             })
         } else {
             fetchData(props.accountAddress);
@@ -52,7 +52,7 @@ const RecentListings = (props) => {
             <Flex flexWrap='wrap'>
                 {data && data.map((item, index) => {
                     return (
-                        <Box width={1 / 2}>
+                        <Box width={1}>
                             <SingleAsset key={index} item={item} buttonText={'Get Details'} />
                         </Box>
                     )

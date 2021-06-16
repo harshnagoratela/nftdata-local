@@ -8,7 +8,6 @@ import Layout from '../components/layout';
 import SEO from '../components/seo';
 import RecentSales from '../components/OpenSea/RecentSales'
 import RecentListings from '../components/OpenSea/RecentListings'
-import MyAssetsSection from '../components/OpenSea/MyAssetsSection'
 import { Field, Radio } from 'rimble-ui';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
@@ -24,19 +23,13 @@ const IndexPage = ({ data }) => {
 
     const [filterCollection, setFilterCollection] = React.useState("All")
 
-    const initialCollections = [
-        'superrare',
-        'known-origin',
-        'async-art',
-        'cryptopunks',
-        'art-blocks',
-    ]
+    const initialCollections = (process.env.GATSBY_INITIAL_COLLECTIONS_LIST && process.env.GATSBY_INITIAL_COLLECTIONS_LIST.split(",")) || []
+    console.log("****** Initial Collections = ",initialCollections)
 
     return (
         <Layout>
             <SEO title="Home" keywords={[`gatsby`, `application`, `react`]} />
-            {/* <ListCollections /> */}
-            <MyAssetsSection site={data.site} />
+            {/* <ListCollections /> */}            
             <h3>Crypto art sales, data, links and info </h3>
             <Field label="Filter collections" mt={3}>
                 <Radio
